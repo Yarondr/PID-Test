@@ -10,7 +10,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.commands.MoveOneMeter;
+import frc.robot.commands.MoveSeconds;
 import frc.robot.subsystems.Chassis;
 
 /**
@@ -22,7 +22,7 @@ import frc.robot.subsystems.Chassis;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final Chassis chassis = new Chassis(Constants.TalonSRXRightFront, Constants.TalonSRXRightBack, Constants.TalonSRXLeftFront, Constants.TalonSRXLeftBack);
-  private final MoveOneMeter moveonemeter = new MoveOneMeter(chassis);
+  private final MoveSeconds moveseconds = new MoveSeconds(chassis);
   private final XboxController controller = new XboxController(Constants.controller);
 
   /**
@@ -50,6 +50,6 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
-    return moveonemeter;
+    return moveseconds;
   }
 }
