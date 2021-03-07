@@ -8,10 +8,11 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.FeedForward;
 
 public class Chassis extends SubsystemBase {
 
@@ -21,22 +22,20 @@ public class Chassis extends SubsystemBase {
   private TalonFX talonSRX3;
 
   //KV/KS = 0.04314 0.22404 Error: 0.001892
-  private double kS = 0.22404;
-  private double kV = 0.04314;
-  private double kA = 0.149;
-  private double kP = 0.00193;
-  private double kD = 0.000708;
 
-  public double power = 0.3;
   public Chassis(int TalonSRXRight1, int TalonSRXRight2, int TalonSRXLeft1, int TalonSRXLeft2) {
     talonSRX0 = new TalonFX(TalonSRXRight1);
     talonSRX1 = new TalonFX(TalonSRXRight2);
     talonSRX2 = new TalonFX(TalonSRXLeft1);
     talonSRX3 = new TalonFX(TalonSRXLeft2);
+    talonSRX1.follow(talonSRX0);
+    talonSRX3.follow(talonSRX2);
     configTalon(talonSRX0);
     configTalon(talonSRX1);
     configTalon(talonSRX2);
     configTalon(talonSRX3);
+    SmartDashboard.putNumber("Last Right Speed", 0);
+    SmartDashboard.putNumber("Last Left Speed", 0);
   }
 
   @Override
@@ -44,13 +43,11 @@ public class Chassis extends SubsystemBase {
     // This method will be called once per scheduler run
   }
 
-  public void setpower(int pulses, double rSpeed, double lSpeed) {
-    double lff = kV+kS*lSpeed+kA*0;
-    double rff = kV+kS*rSpeed+kA*0;
-    talonSRX0.set(ControlMode.Velocity, pulses, DemandType.ArbitraryFeedForward, rff);
-    talonSRX1.set(ControlMode.Velocity, pulses, DemandType.ArbitraryFeedForward, rff);
-    talonSRX2.set(ControlMode.Velocity, pulses, DemandType.ArbitraryFeedForward, lff);
-    talonSRX3.set(ControlMode.Velocity, pulses, DemandType.ArbitraryFeedForward, lff);
+  public void setpower(double rSpeed, double lSpeed) {
+    double lff = FeedForward.feedForwardLeftPower(lSpeed, rSpeed);
+    double rff = FeedForward.feedForwardRightPower(rSpeed, lSpeed);
+    talonSRX0.set(ControlMode.PercentOutput, rff);
+    talonSRX1.set(ControlMode.PercentOutput, lff);
   }
 
   public int getSensorRight() {
@@ -59,6 +56,14 @@ public class Chassis extends SubsystemBase {
 
   public int getSensorLeft() {
     return (int)talonSRX2.getSelectedSensorPosition();
+  }
+
+  public double getVelocityRight() {
+    return talonSRX0.getSelectedSensorVelocity();
+  }
+
+  public double getVelocityLeft() {
+    return talonSRX2.getSelectedSensorVelocity();
   }
 
   public void configTalon(TalonFX talon) {
