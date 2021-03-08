@@ -35,8 +35,8 @@ public class MoveSeconds extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    lSpeed = SmartDashboard.getNumber("Left Speed", 0.3);
-    rSpeed = SmartDashboard.getNumber("Right Speed", 0.2);
+    lSpeed = SmartDashboard.getNumber("left speed", 0.3);
+    rSpeed = SmartDashboard.getNumber("right speed", 0.2);
     count = 0;
     m_chassis.setpower(rSpeed, lSpeed);
   }
@@ -45,13 +45,15 @@ public class MoveSeconds extends CommandBase {
   @Override
   public void execute() {
     count++;
+    
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    SmartDashboard.putNumber("Last Right Speed", m_chassis.getVelocityRight());
-    SmartDashboard.putNumber("Last Left Speed", m_chassis.getVelocityLeft());
+    SmartDashboard.putNumber("Last Right Speed", m_chassis.getVelocityRight()*10/Constants.onemeterinpulses);
+    SmartDashboard.putNumber("Last Left Speed", m_chassis.getVelocityLeft()*10/Constants.onemeterinpulses);
+    m_chassis.setpower(0, 0);
   }
 
   // Returns true when the command should end.

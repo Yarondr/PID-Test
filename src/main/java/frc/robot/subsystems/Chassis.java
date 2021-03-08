@@ -30,6 +30,8 @@ public class Chassis extends SubsystemBase {
     talonSRX3 = new TalonFX(TalonSRXLeft2);
     talonSRX1.follow(talonSRX0);
     talonSRX3.follow(talonSRX2);
+    talonSRX0.setInverted(true);
+    talonSRX1.setInverted(true);
     configTalon(talonSRX0);
     configTalon(talonSRX1);
     configTalon(talonSRX2);
@@ -45,9 +47,11 @@ public class Chassis extends SubsystemBase {
 
   public void setpower(double rSpeed, double lSpeed) {
     double lff = FeedForward.feedForwardLeftPower(lSpeed, rSpeed);
-    double rff = FeedForward.feedForwardRightPower(rSpeed, lSpeed);
+    double rff = FeedForward.feedForwardRightPower(lSpeed, rSpeed);
+    System.out.print("Left FF: " + lff);
+    System.out.print("Right FF: " + rff);
     talonSRX0.set(ControlMode.PercentOutput, rff);
-    talonSRX1.set(ControlMode.PercentOutput, lff);
+    talonSRX2.set(ControlMode.PercentOutput, lff);
   }
 
   public int getSensorRight() {
